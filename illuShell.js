@@ -1,12 +1,16 @@
 const shellPrompt = 'illu@shell ';
 const workingPath = ['~'];
-const path = ['user', 'illu'];
+const path = ['this', 'that'];
 const invalidCmdMsg = 'Error: Command not recognized';
 const invalidArgMsg = 'Error: Arguments not recognized';
+const file1 = ['This is a file in which there will be ,any things'];
+const directory1 = ['file1', 'file2'];
+const directory2 = ['file3', 'file4', 'file5'];
+const directory3 = ['file6'];
 
 const pwd = function (args) {
   if (args.length === 0) {
-    return path.join('/');
+    return 'User/' + path.join('/');
   }
 
   return invalidArgMsg;
@@ -16,22 +20,49 @@ const echo = function (args) {
   return args.join(' ');
 };
 
-const changeDir = function () {
-  //code has to be written
+const goToBackDir = function () {
+  if (path.length > 0) {
+    path.pop();
+  }
+
+  if (path.length < 1) {
+    workingPath[0] = '~';
+    return;
+  }
+
+  workingPath[0] = path.at(-1);
 };
 
-const respectiveCommandFunction = [['pwd', pwd], ['echo', echo]];
+const nothing = function () {
+  return;
+};
+
+const goToDir = function (args) {
+
+};
+
+const cd = function (args) {
+  switch (args.join('')) {
+    case '': return nothing();
+    case '.': return nothing();
+    case '..': return goToBackDir();
+  }
+
+  return goToBackDir(args);
+};
+
+const commandFunctions = [pwd, echo, cd];
 
 const execute = function (command, args) {
-  const commandFunction = respectiveCommandFunction.find(function (list) {
-    return command === list[0];
+  const commandFunction = commandFunctions.find(function (list) {
+    return command === list.name;
   });
 
   if (isUndefined(commandFunction)) {
     return invalidCmdMsg;
   }
 
-  return commandFunction[1](args);
+  return commandFunction(args);
 };
 
 const getInstruction = function () {
