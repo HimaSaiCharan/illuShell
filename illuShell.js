@@ -1,13 +1,3 @@
-const shellPrompt = 'illu@shell ';
-const workingPath = ['~'];
-const path = ['this', 'that'];
-const invalidCmdMsg = 'Error: Command not recognized';
-const invalidArgMsg = 'Error: Arguments not recognized';
-const file1 = ['This is a file in which there will be ,any things'];
-const directory1 = ['file1', 'file2'];
-const directory2 = ['file3', 'file4', 'file5'];
-const directory3 = ['file6'];
-
 const pwd = function (args) {
   if (args.length === 0) {
     return 'User/' + path.join('/');
@@ -20,58 +10,46 @@ const echo = function (args) {
   return args.join(' ');
 };
 
-const goToBackDir = function () {
-  if (path.length > 0) {
-    path.pop();
-  }
-
-  if (path.length < 1) {
-    workingPath[0] = '~';
-    return;
-  }
-
-  workingPath[0] = path.at(-1);
-};
-
-const nothing = function () {
-  return;
-};
-
 const goToDir = function (args) {
-
+  return invalidDirMsg;
 };
 
 const cd = function (args) {
-  switch (args.join('')) {
-    case '': return nothing();
-    case '.': return nothing();
-    case '..': return goToBackDir();
-  }
 
-  return goToBackDir(args);
+
+  return goToDir(args);
 };
 
-const commandFunctions = [pwd, echo, cd];
+const spaces = (times) => SPACE.repeat(times);
+
+const currentDirStructure = function () {
+  const directoryContents = path;
+};
+
+const ls = function (args) {
+  if (args.length !== 0) {
+    return invalidArgMsg;
+  }
+
+  return currentDirStructure();
+};
+
 
 const execute = function (command, args) {
-  const commandFunction = commandFunctions.find(function (list) {
-    return command === list.name;
-  });
+  const commandToExecute = commandFunctionMap[command];
 
-  if (isUndefined(commandFunction)) {
+  if (isUndefined(commandToExecute)) {
     return invalidCmdMsg;
   }
 
-  return commandFunction(args);
+  return commandToExecute(args);
 };
 
 const getInstruction = function () {
-  return prompt(shellPrompt + workingPath.join(' ') + ' >').split(' ');
+  return prompt(shellPrompt + workingDir.join(' ') + ' >').split(' ');
 };
 
-const isUndefined = function (value) {
-  return value === undefined;
-};
+const isUndefined = (value) => value === undefined;
 
 const illuShell = function () {
   while (true) {
@@ -81,14 +59,38 @@ const illuShell = function () {
       continue;
     }
 
-    const acknowledgement = execute(command, args);
+    const acknowledgement = execute(command, args) || '';
 
-    if (isUndefined(acknowledgement)) {
+    if (acknowledgement === '') {
       continue;
     }
 
     console.log(acknowledgement);
   }
 };
+
+const SPACE = ' ';
+const shellPrompt = 'illu@shell ';
+const workingDir = ['~'];
+const fileSystem = {
+  '~':
+  {
+    'basics': {
+      'assignments1': {
+        '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b)'],
+        '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b)']
+      },
+      'assignment2': {
+        '01.js': ['const a =20;', 'const b =30', 'console.log(a * b)']
+      }
+    },
+    'readMe.txt': ['This is just an sample file system. Here you can add new files and directories.']
+  }
+};
+const path = ['~'];
+const invalidCmdMsg = 'Error: Command not recognized';
+const invalidArgMsg = 'Error: Arguments not recognized';
+const invalidDirMsg = 'Error: Directory/file not found';
+const commandFunctionMap = { 'pwd': pwd, 'echo': echo, 'cd': cd, 'ls': ls };
 
 illuShell();
