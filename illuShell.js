@@ -1,6 +1,6 @@
 const pwd = function (args) {
   if (args.length === 0) {
-    return 'User/' + path.join('/');
+    return 'User/' + path.slice(1).join('/');
   }
 
   return invalidArgMsg;
@@ -55,15 +55,12 @@ const illuShell = function () {
   while (true) {
     const [command, ...args] = getInstruction();
 
-    if (command === '') {
-      continue;
-    }
+    if (command === '') { continue; }
+    if (command === 'exit()') { return; }
 
     const acknowledgement = execute(command, args) || '';
 
-    if (acknowledgement === '') {
-      continue;
-    }
+    if (acknowledgement === '') { continue; }
 
     console.log(acknowledgement);
   }
