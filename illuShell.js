@@ -12,13 +12,19 @@ const echo = function (args) {
   return args.join(' ');
 };
 
-const cd = function (dirName) {
-  if (!(dirName in workingDirContents)) {
+const cd = function (args) {
+  console.log(args);
+
+  if (!workingDirContents.includes(args[0])) {
     return invalidDirMsg;
   }
 
-  path.push(dirName);
-  // workingDir[0] = dirName;
+  path.push(args[0]);
+  const workingDirTree = path.reduce(getDirContents, fileSystem);
+  const workingDirlocalEntries = Object.keys(workingDirTree);
+  Object.assign(workingDirContents, workingDirlocalEntries);
+
+  return;
 };
 
 const getDirContents = (currentDir, subDir) => {
@@ -26,13 +32,15 @@ const getDirContents = (currentDir, subDir) => {
 };
 
 const getWorkingDirContents = function () {
-  const currentDirContents = path.reduce(getDirContents, fileSystem);
+  // const currentDirContents = path.reduce(getDirContents, fileSystem);
 
-  if (isUndefined(currentDirContents)) {
-    return invalidDirMsg;
-  }
+  // if (isUndefined(currentDirContents)) {
+  //   return invalidDirMsg;
+  // }
 
-  return Object.keys(currentDirContents).join(spaces(15));
+  // return Object.keys(currentDirContents).join(spaces(15));
+
+  return workingDirContents.join(spaces(15));
 };
 
 const ls = function (args) {
@@ -92,19 +100,8 @@ const fileSystem = {
     'readMe.txt': ['This is just an sample file system. Here you can add new files and directories.']
   }
 };
-const path = ['~', 'basics'];
-let workingDirContents = {
-  'basics': {
-    'assignment1': {
-      '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b);'],
-      '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b);']
-    },
-    'assignment2': {
-      '01.js': ['const a =20;', 'const b =30;', 'console.log(a * b);']
-    }
-  },
-  'readMe.txt': ['This is just an sample file system. Here you can add new files and directories.']
-};
+const path = ['~'];
+const workingDirContents = ['basics', 'readMe.txt'];
 const invalidCmdMsg = 'Error: Command not recognized';
 const invalidArgMsg = 'Error: Arguments not recognized';
 const invalidDirMsg = 'Error: Directory/file not found';
