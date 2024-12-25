@@ -12,15 +12,21 @@ const echo = function (args) {
   return args.join(' ');
 };
 
-const cd = function (args) {
+const cd = function (dirName) {
+  if (!(dirName in workingDirContents)) {
+    return invalidDirMsg;
+  }
+
+  path.push(dirName);
+  // workingDir[0] = dirName;
 };
 
-const isDirOrFilePresent = (currentDir, subDir) => {
+const getDirContents = (currentDir, subDir) => {
   return currentDir[subDir];
 };
 
 const getWorkingDirContents = function () {
-  const currentDirContents = path.reduce(isDirOrFilePresent, fileSystem);
+  const currentDirContents = path.reduce(getDirContents, fileSystem);
 
   if (isUndefined(currentDirContents)) {
     return invalidDirMsg;
@@ -30,11 +36,11 @@ const getWorkingDirContents = function () {
 };
 
 const ls = function (args) {
-  if (args.length !== 0) {
-    return invalidArgMsg;
+  if (args.length === 0) {
+    return getWorkingDirContents();
   }
 
-  return getWorkingDirContents();
+  return invalidArgMsg;
 };
 
 
@@ -49,7 +55,7 @@ const execute = function (command, args) {
 };
 
 const getInstruction = function () {
-  return prompt(shellPrompt + workingDir.join(' ') + ' >').split(' ');
+  return prompt(shellPrompt + path.at(-1) + ' >').split(' ');
 };
 
 const isUndefined = (value) => value === undefined;
@@ -71,25 +77,33 @@ const illuShell = function () {
 
 const SPACE = ' ';
 const shellPrompt = 'illu@shell ';
-const workingDir = ['~'];
 const fileSystem = {
   '~':
   {
     'basics': {
       'assignment1': {
-        '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b)'],
-        '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b)']
+        '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b);'],
+        '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b);']
       },
       'assignment2': {
-        '01.js': ['const a =20;', 'const b =30', 'console.log(a * b)']
+        '01.js': ['const a =20;', 'const b =30;', 'console.log(a * b);']
       }
     },
     'readMe.txt': ['This is just an sample file system. Here you can add new files and directories.']
   }
 };
-const path = ['~'];
-const workingDirContent = {
-
+const path = ['~', 'basics'];
+let workingDirContents = {
+  'basics': {
+    'assignment1': {
+      '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b);'],
+      '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b);']
+    },
+    'assignment2': {
+      '01.js': ['const a =20;', 'const b =30;', 'console.log(a * b);']
+    }
+  },
+  'readMe.txt': ['This is just an sample file system. Here you can add new files and directories.']
 };
 const invalidCmdMsg = 'Error: Command not recognized';
 const invalidArgMsg = 'Error: Arguments not recognized';
