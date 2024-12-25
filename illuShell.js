@@ -1,3 +1,5 @@
+const spaces = (times) => SPACE.repeat(times);
+
 const pwd = function (args) {
   if (args.length === 0) {
     return 'User/' + path.slice(1).join('/');
@@ -10,20 +12,21 @@ const echo = function (args) {
   return args.join(' ');
 };
 
-const goToDir = function (args) {
-  return invalidDirMsg;
-};
-
 const cd = function (args) {
-
-
-  return goToDir(args);
 };
 
-const spaces = (times) => SPACE.repeat(times);
+const isDirOrFilePresent = (currentDir, subDir) => {
+  return currentDir[subDir];
+};
 
-const currentDirStructure = function () {
-  const directoryContents = path;
+const getWorkingDirContents = function () {
+  const currentDirContents = path.reduce(isDirOrFilePresent, fileSystem);
+
+  if (isUndefined(currentDirContents)) {
+    return invalidDirMsg;
+  }
+
+  return Object.keys(currentDirContents).join(spaces(15));
 };
 
 const ls = function (args) {
@@ -31,7 +34,7 @@ const ls = function (args) {
     return invalidArgMsg;
   }
 
-  return currentDirStructure();
+  return getWorkingDirContents();
 };
 
 
@@ -73,7 +76,7 @@ const fileSystem = {
   '~':
   {
     'basics': {
-      'assignments1': {
+      'assignment1': {
         '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b)'],
         '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b)']
       },
@@ -85,6 +88,9 @@ const fileSystem = {
   }
 };
 const path = ['~'];
+const workingDirContent = {
+
+};
 const invalidCmdMsg = 'Error: Command not recognized';
 const invalidArgMsg = 'Error: Arguments not recognized';
 const invalidDirMsg = 'Error: Directory/file not found';
