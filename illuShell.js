@@ -8,40 +8,42 @@ const pwd = function (args) {
   return invalidArgMsg;
 };
 
-const echo = function (args) {
-  return args.join(' ');
+const echo = (args) => args.join(' ');
+
+const updateWorkingDirContents = function () {
+  const workingDirTree = path.reduce(getDirContents, fileSystem);
+  const workingDirlocalEntries = Object.keys(workingDirTree);
+  Object.assign(workingDirContents, workingDirlocalEntries);
 };
+
+const goToHomeDir = function () {
+
+};
+
+const goToParentDir = function () {
+  path.pop();
+  updateWorkingDirContents();
+};
+
+const doNothing = () => undefined;
 
 const cd = function (args) {
   console.log(args);
+  if (args[0] in cdShortcuts) {
+    return args[0]();
+  }
 
   if (!workingDirContents.includes(args[0])) {
     return invalidDirMsg;
   }
 
   path.push(args[0]);
-  const workingDirTree = path.reduce(getDirContents, fileSystem);
-  const workingDirlocalEntries = Object.keys(workingDirTree);
-  Object.assign(workingDirContents, workingDirlocalEntries);
-
-  return;
+  updateWorkingDirContents();
 };
 
-const getDirContents = (currentDir, subDir) => {
-  return currentDir[subDir];
-};
+const getDirContents = (currentDir, subDir) => currentDir[subDir];
 
-const getWorkingDirContents = function () {
-  // const currentDirContents = path.reduce(getDirContents, fileSystem);
-
-  // if (isUndefined(currentDirContents)) {
-  //   return invalidDirMsg;
-  // }
-
-  // return Object.keys(currentDirContents).join(spaces(15));
-
-  return workingDirContents.join(spaces(15));
-};
+const getWorkingDirContents = () => workingDirContents.join(spaces(15));
 
 const ls = function (args) {
   if (args.length === 0) {
@@ -75,9 +77,9 @@ const illuShell = function () {
     if (command === '') { continue; }
     if (command === 'exit()') { return; }
 
-    const acknowledgement = execute(command, args) || '';
+    const acknowledgement = execute(command, args);
 
-    if (acknowledgement === '') { continue; }
+    if (isUndefined(acknowledgement)) { continue; }
 
     console.log(acknowledgement);
   }
@@ -106,5 +108,6 @@ const invalidCmdMsg = 'Error: Command not recognized';
 const invalidArgMsg = 'Error: Arguments not recognized';
 const invalidDirMsg = 'Error: Directory/file not found';
 const commandFunctionMap = { 'pwd': pwd, 'echo': echo, 'cd': cd, 'ls': ls };
+const cdShortcuts = { '.': doNothing, '..': goToParentDir, '': goToHomeDir };
 
 illuShell();
