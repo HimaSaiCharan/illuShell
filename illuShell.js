@@ -10,18 +10,23 @@ const pwd = function (args) {
 
 const echo = (args) => args.join(' ');
 
-const getDirContents = (currentDir, nextDir) => currentDir[nextDir];
+const goToParentDir = function () {
+  path.pop();
+  workingDirTree = path.reduce((currentDir, nextDir) => currentDir[nextDir], fileSystem);
+  return;
+};
 
 const goToHomeDir = function () {
 
 };
 
-const goToParentDir = function () {
-  path.pop();
-  updateWorkingDirContents();
-};
-
 const sameDir = () => undefined;
+
+const updateWorkingDirContents = function (currentDir) {
+  const newDir = workingDirTree[currentDir];
+  workingDirTree = newDir;
+  return;
+};
 
 const cd = function (args) {
   const cdShortcuts = { '.': sameDir, '..': goToParentDir, '': goToHomeDir };
@@ -30,19 +35,17 @@ const cd = function (args) {
     return cdShortcuts[args[0]]();
   }
 
-  if (!getWorkingDirContents(workingDirContents).includes(args[0])) {
+  if (!(args[0] in workingDirTree)) {
     return 'Error: Directory/file not found';
   }
 
   path.push(args[0]);
-  return;
+  return updateWorkingDirContents(args[0]);
 };
-
-const getWorkingDirContents = () => Object.keys(workingDirContents);
 
 const ls = function (args) {
   if (args.length === 0) {
-    return getWorkingDirContents().join(spaces(15));
+    return Object.keys(workingDirTree).join(spaces(15));
   }
 
   return 'Error: Arguments not recognized';
@@ -100,7 +103,7 @@ const fileSystem = {
   }
 };
 const path = ['~'];
-let workingDirContents = {
+let workingDirTree = {
   'basics': {
     'assignment1': {
       '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b);'],
