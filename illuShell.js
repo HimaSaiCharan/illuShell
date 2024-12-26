@@ -11,6 +11,8 @@ const pwd = function (args) {
 const echo = (args) => args.join(' ');
 
 const goToParentDir = function () {
+  if (path.length === 1) { return; }
+
   path.pop();
   workingDirTree = path.reduce((currentDir, nextDir) => currentDir[nextDir], fileSystem);
   return;
@@ -35,12 +37,12 @@ const cd = function (args) {
     return cdShortcuts[args[0]]();
   }
 
-  if (!(args[0] in workingDirTree)) {
-    return 'Error: Directory/file not found';
+  if (args[0] in workingDirTree && !args[0].includes('.')) {
+    path.push(args[0]);
+    return updateWorkingDirContents(args[0]);
   }
 
-  path.push(args[0]);
-  return updateWorkingDirContents(args[0]);
+  return 'Error: Directory not found';
 };
 
 const ls = function (args) {
