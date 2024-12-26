@@ -1,3 +1,21 @@
+const fileSystem = {
+  '~':
+  {
+    'basics': {
+      'assignment1': {
+        '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b);'],
+        '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b);']
+      },
+      'assignment2': {
+        '01.js': ['const a =20;', 'const b =30;', 'console.log(a * b);']
+      }
+    },
+    'readMe.txt': ['This is just an sample file system. Here you can add new files and directories.']
+  }
+};
+const currentPath = ['~'];
+let workingDirTree = fileSystem['~'];
+
 const spaces = (times) => ' '.repeat(times);
 
 const pwd = function (args) {
@@ -30,6 +48,12 @@ const updateWorkingDirContents = function (currentDir) {
   return;
 };
 
+const isDirNameValid = function (dirName) {
+  return dirName.length > 0 && dirName[0].length > 0 && !dirName[0].includes('.');
+};
+
+const isItemPresent = (itemName) => itemName[0] in workingDirTree;
+
 const cd = function (args) {
   const cdShortcuts = { '.': stayInSameDirectory, '..': goToParentDir, '~': goToHomeDir };
 
@@ -53,7 +77,9 @@ const ls = function (args) {
   return 'Error: Arguments not recognized';
 };
 
-const isItemPresent = (itemName) => itemName[0] in workingDirTree;
+const isFileNameValid = function (fileName) {
+  return fileName.length > 0 && fileName[0].length > 0 && fileName[0].includes('.');
+};
 
 const cat = function (args) {
   if (isFileNameValid(args) && isItemPresent(args)) {
@@ -66,14 +92,6 @@ const cat = function (args) {
 const addItemToFileSystem = function (itemName, item) {
   workingDirTree[itemName] = item;
   return;
-};
-
-const isFileNameValid = function (fileName) {
-  return fileName.length > 0 && fileName[0].length > 0 && fileName[0].includes('.');
-};
-
-const isDirNameValid = function (dirName) {
-  return dirName.length > 0 && dirName[0].length > 0 && !dirName[0].includes('.');
 };
 
 const mkdir = function (args) {
@@ -123,23 +141,5 @@ const illuShell = function () {
 
   return;
 };
-
-const fileSystem = {
-  '~':
-  {
-    'basics': {
-      'assignment1': {
-        '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b);'],
-        '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b);']
-      },
-      'assignment2': {
-        '01.js': ['const a =20;', 'const b =30;', 'console.log(a * b);']
-      }
-    },
-    'readMe.txt': ['This is just an sample file system. Here you can add new files and directories.']
-  }
-};
-const currentPath = ['~'];
-let workingDirTree = fileSystem['~'];
 
 illuShell();
