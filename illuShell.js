@@ -1,20 +1,16 @@
-const spaces = (times) => SPACE.repeat(times);
+const spaces = (times) => ' '.repeat(times);
 
 const pwd = function (args) {
   if (args.length === 0) {
     return 'User/' + path.slice(1).join('/');
   }
 
-  return invalidArgMsg;
+  return 'Error: Arguments not recognized';
 };
 
 const echo = (args) => args.join(' ');
 
-const updateWorkingDirContents = function () {
-  const workingDirTree = path.reduce(getDirContents, fileSystem);
-  const workingDirlocalEntries = Object.keys(workingDirTree);
-  Object.assign(workingDirContents, workingDirlocalEntries);
-};
+const getDirContents = (currentDir, nextDir) => currentDir[nextDir];
 
 const goToHomeDir = function () {
 
@@ -25,68 +21,69 @@ const goToParentDir = function () {
   updateWorkingDirContents();
 };
 
-const doNothing = () => undefined;
+const sameDir = () => undefined;
 
 const cd = function (args) {
-  console.log(args);
+  const cdShortcuts = { '.': sameDir, '..': goToParentDir, '': goToHomeDir };
+
   if (args[0] in cdShortcuts) {
-    return args[0]();
+    return cdShortcuts[args[0]]();
   }
 
-  if (!workingDirContents.includes(args[0])) {
-    return invalidDirMsg;
+  if (!getWorkingDirContents(workingDirContents).includes(args[0])) {
+    return 'Error: Directory/file not found';
   }
 
   path.push(args[0]);
-  updateWorkingDirContents();
+  return;
 };
 
-const getDirContents = (currentDir, subDir) => currentDir[subDir];
-
-const getWorkingDirContents = () => workingDirContents.join(spaces(15));
+const getWorkingDirContents = () => Object.keys(workingDirContents);
 
 const ls = function (args) {
   if (args.length === 0) {
-    return getWorkingDirContents();
+    return getWorkingDirContents().join(spaces(15));
   }
 
-  return invalidArgMsg;
-};
-
-
-const execute = function (command, args) {
-  const commandToExecute = commandFunctionMap[command];
-
-  if (isUndefined(commandToExecute)) {
-    return invalidCmdMsg;
-  }
-
-  return commandToExecute(args);
+  return 'Error: Arguments not recognized';
 };
 
 const getInstruction = function () {
-  return prompt(shellPrompt + path.at(-1) + ' >').split(' ');
+  return prompt('illu@shell ' + path.at(-1) + ' >').split(' ');
 };
 
 const isUndefined = (value) => value === undefined;
 
-const illuShell = function () {
-  while (true) {
-    const [command, ...args] = getInstruction();
+const execute = function (command, args) {
+  const commandFunctionMap = { 'pwd': pwd, 'echo': echo, 'cd': cd, 'ls': ls, '': '' };
+  const commandToExecute = commandFunctionMap[command];
 
-    if (command === '') { continue; }
-    if (command === 'exit()') { return; }
-
-    const acknowledgement = execute(command, args);
-
-    if (isUndefined(acknowledgement)) { continue; }
-
-    console.log(acknowledgement);
+  if (isUndefined(commandToExecute)) {
+    return 'Error: Command not recognized';
   }
+
+  if (commandToExecute !== '') {
+    return commandToExecute(args);
+  }
+
+  return;
 };
 
-const SPACE = ' ';
-const shellPrompt = 'illu@shell ';
+const illuShell = function () {
+  let [command, args, acknowledgement] = ['', '', ''];
+
+  while (command !== 'exit()') {
+    [command, ...args] = getInstruction();
+    acknowledgement = execute(command, args);
+
+    if (!isUndefined(acknowledgement)) {
+      console.log(acknowledgement);
+    }
+  }
+
+  return;
+};
+
 const fileSystem = {
   '~':
   {
@@ -103,11 +100,17 @@ const fileSystem = {
   }
 };
 const path = ['~'];
-const workingDirContents = ['basics', 'readMe.txt'];
-const invalidCmdMsg = 'Error: Command not recognized';
-const invalidArgMsg = 'Error: Arguments not recognized';
-const invalidDirMsg = 'Error: Directory/file not found';
-const commandFunctionMap = { 'pwd': pwd, 'echo': echo, 'cd': cd, 'ls': ls };
-const cdShortcuts = { '.': doNothing, '..': goToParentDir, '': goToHomeDir };
+let workingDirContents = {
+  'basics': {
+    'assignment1': {
+      '01.js': ['const a = 10;', 'const b = 20;', 'console.log(a + b);'],
+      '02.js': ['const a = 10;', 'const b = 20;', 'console.log(a - b);']
+    },
+    'assignment2': {
+      '01.js': ['const a =20;', 'const b =30;', 'console.log(a * b);']
+    }
+  },
+  'readMe.txt': ['This is just an sample file system. Here you can add new files and directories.']
+};
 
 illuShell();
