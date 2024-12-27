@@ -106,6 +106,18 @@ const mkdir = function (args) {
   return addItemToFileSystem(args[0], {});
 };
 
+const touch = function (args) {
+  if (!isFileNameValid(args)) {
+    return 'Error: Invalid file name';
+  }
+
+  if (isItemPresent(args)) {
+    return 'Error: File already exists';
+  }
+
+  return addItemToFileSystem(args[0], []);
+};
+
 const getInstruction = function () {
   return prompt('illu@shell ' + currentPath.at(-1) + ' >').split(' ');
 };
@@ -113,7 +125,7 @@ const getInstruction = function () {
 const isUndefined = (value) => value === undefined;
 
 const execute = function (command, args) {
-  const commandFunctionMap = { 'pwd': pwd, 'echo': echo, 'cd': cd, 'ls': ls, 'cat': cat, 'mkdir': mkdir, '': '' };
+  const commandFunctionMap = { 'pwd': pwd, 'echo': echo, 'cd': cd, 'ls': ls, 'cat': cat, 'mkdir': mkdir, 'touch': touch, '': '' };
   const commandToExecute = commandFunctionMap[command];
 
   if (isUndefined(commandToExecute)) {
