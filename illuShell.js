@@ -125,13 +125,14 @@ const touch = function (args) {
 };
 
 const getInstruction = function () {
-  return prompt('illu@shell ' + currentPath.at(-1) + ' >').split(' ');
+  const message = 'illu@shell ' + currentPath.at(-1) + ' >';
+  return prompt(message).split(' ');
 };
 
 const isUndefined = (value) => value === undefined;
 
 const execute = function (command, args) {
-  const commandFunctionMap = { 'pwd': pwd, 'echo': echo, 'cd': cd, 'ls': ls, 'cat': cat, 'mkdir': mkdir, 'touch': touch, '': '' };
+  const commandFunctionMap = { pwd, ls, cd, mkdir, touch, cat, '': '' };
   const commandToExecute = commandFunctionMap[command];
 
   if (isUndefined(commandToExecute)) {
@@ -146,11 +147,12 @@ const execute = function (command, args) {
 };
 
 const illuShell = function () {
-  let [command, args, acknowledgement] = ['', '', ''];
+  let command = '';
 
   while (command !== 'exit()') {
+    let args = '';
     [command, ...args] = getInstruction();
-    acknowledgement = execute(command, args);
+    const acknowledgement = execute(command, args);
 
     if (!isUndefined(acknowledgement)) {
       console.log(acknowledgement);
