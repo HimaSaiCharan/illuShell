@@ -40,8 +40,6 @@ const goToHomeDir = function () {
 
 };
 
-const stayInSameDirectory = () => undefined;
-
 const updateWorkingDirContents = function (currentDir) {
   const newDir = workingDirTree[currentDir];
   workingDirTree = newDir;
@@ -54,19 +52,27 @@ const isDirNameValid = function (dirName) {
 
 const isItemPresent = (itemName) => itemName[0] in workingDirTree;
 
-const cd = function (args) {
-  const cdShortcuts = { '.': stayInSameDirectory, '..': goToParentDir, '~': goToHomeDir };
-
-  if (args[0] in cdShortcuts) {
-    return cdShortcuts[args[0]]();
-  }
-
+const goToSpecificDir = function (args) {
   if (isDirNameValid(args) && isItemPresent(args)) {
     currentPath.push(args[0]);
     return updateWorkingDirContents(args[0]);
   }
 
   return 'Error: Directory not found';
+};
+
+const cd = function (args) {
+  const cdShortcuts = { '..': goToParentDir, '~': goToHomeDir };
+
+  if (args[0] === '.') {
+    return;
+  }
+
+  if (args[0] in cdShortcuts) {
+    return cdShortcuts[args[0]]();
+  }
+
+  return goToSpecificDir(args);
 };
 
 const ls = function (args) {
